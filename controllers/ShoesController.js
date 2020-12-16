@@ -16,6 +16,7 @@ const shoes = {
         limit,
       };
     }
+    result.left = (await Shoe.find()).length - endIndex;
 
     if (startIndex > 0) {
       result.previous = {
