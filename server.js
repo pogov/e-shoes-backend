@@ -18,7 +18,7 @@ db.once("open", () => console.log(`Connected to database: ${db.name}`));
 const app = express();
 
 app.use(cors());
-app.use("/", routes);
 app.use(express.json({ extended: false }));
+app.use("/", routes);
 
 app.listen(port, () => console.log(`listen on port ${port}`));
