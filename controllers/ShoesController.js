@@ -1,23 +1,19 @@
 const Shoe = require("../models/Shoe");
 
-const shoes = {
-  getallShoes: async (req, res) => {
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
+async function findShoe(queryValue, startIndex, endIndex, page, limit, res) {
+  const result = {};
 
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
+  if (queryValue !== "undefined") {
+    //
+    const regex = new RegExp(`${queryValue}`, "gi");
 
-    const result = {};
-
-    if (endIndex < (await Shoe.countDocuments().exec())) {
+    if (endIndex < (await Shoe.find({ name: regex }).countDocuments().exec())) {
       result.next = {
         page: page + 1,
         limit,
       };
     }
-    result.left = (await Shoe.find()).length - endIndex;
-
+    result.left = (await Shoe.find({ name: regex })).length - endIndex;
     if (startIndex > 0) {
       result.previous = {
         page: page - 1,
@@ -26,11 +22,51 @@ const shoes = {
     }
 
     try {
-      result.shoes = await Shoe.find().limit(limit).skip(startIndex).exec();
+      const schemaQuery = Shoe.find({ name: regex })
+        .limit(limit)
+        .skip(startIndex);
+      schemaQuery.getFilter();
+      result.shoes = await schemaQuery.exec();
       res.status(201).json(result);
     } catch (err) {
       res.status(404).json({ message: err.message });
     }
+    return;
+  }
+
+  if (endIndex < (await Shoe.countDocuments().exec())) {
+    result.next = {
+      page: page + 1,
+      limit,
+    };
+  }
+  result.left = (await Shoe.find()).length - endIndex;
+  if (startIndex > 0) {
+    result.previous = {
+      page: page - 1,
+      limit,
+    };
+  }
+  try {
+    result.shoes = await Shoe.find().limit(limit).skip(startIndex).exec();
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(404).json({ message: err.message });
+  }
+}
+
+const shoes = {
+  getallShoes: (req, res) => {
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const query = req.query.query;
+
+    console.log(query);
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    findShoe(query, startIndex, endIndex, page, limit, res);
   },
   getOneShoe: async (req, res) => {
     try {
