@@ -1,3 +1,4 @@
+const { count } = require("../models/Shoe");
 const Shoe = require("../models/Shoe");
 
 async function findShoe(queryValue, startIndex, endIndex, page, limit, res) {
@@ -13,7 +14,9 @@ async function findShoe(queryValue, startIndex, endIndex, page, limit, res) {
         limit,
       };
     }
-    result.left = (await Shoe.find({ name: regex })).length - endIndex;
+    result.count = (await Shoe.find({ name: regex })).length;
+    result.left = count - endIndex;
+
     if (startIndex > 0) {
       result.previous = {
         page: page - 1,
@@ -40,7 +43,9 @@ async function findShoe(queryValue, startIndex, endIndex, page, limit, res) {
       limit,
     };
   }
-  result.left = (await Shoe.find()).length - endIndex;
+  result.count = (await Shoe.find()).length;
+  result.left = result.count - endIndex;
+
   if (startIndex > 0) {
     result.previous = {
       page: page - 1,
@@ -60,8 +65,6 @@ const shoes = {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
     const query = req.query.query;
-
-    console.log(query);
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
