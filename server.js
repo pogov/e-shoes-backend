@@ -4,7 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const routes = require("./routes");
-const port = 5500;
+const port = process.env.PORT || 5500;
 
 mongoose.connect(process.env.DATA_BASE_URL, {
   useNewUrlParser: true,
@@ -22,12 +22,12 @@ const corsOptions = {
 
 const app = express();
 
-app.use(cors());
 app.use(express.json({ extended: false }));
+app.use(cors());
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept");
+  res.header("Access-Control-Allow-Headers", "*");
   if (req.method === "OPTIONS") {
     res.header("Access-Control-Allow-Methods", "GET");
     return res.status(200).json({});
@@ -37,6 +37,4 @@ app.use((req, res, next) => {
 
 app.use("/", routes);
 
-app.listen(process.env.PORT || port, () =>
-  console.log(`listen on port ${port}`),
-);
+app.listen(port, () => console.log(`listen on port ${port}`));
