@@ -22,7 +22,7 @@ const corsOptions = {
 
 const app = express();
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json({ extended: false }));
 
 app.use((req, res, next) => {
