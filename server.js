@@ -28,7 +28,7 @@ app.use(express.json({ extended: false }));
 app.use((req, res, next) => {
   res.header(
     "Access-Control-Allow-Origin",
-    "http://localhost:3000, https://thirsty-johnson-2e276d.netlify.app",
+    "https://thirsty-johnson-2e276d.netlify.app",
   );
   res.header("Access-Control-Allow-Headers", "*");
   if (req.method === "OPTIONS") {
